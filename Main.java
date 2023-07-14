@@ -2,7 +2,6 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
-import java.util.Comparator;
 
 class Main {
 
@@ -26,7 +25,7 @@ class Main {
 
         String[][] data = csvParser("./dados.csv", ",");
         sumActiveIfConfirmedBiggerThanN1(data, n1);
-        n2BiggestActiveDeathsOfN3SmallerConfirmeds(data, n2, n3);
+        n2BiggestActiveDeathsOfN3SmallerConfirms(data, n2, n3);
     }
     public static String[][] csvParser(String csvFile, String csvSplitBy) {
         String line;
@@ -59,28 +58,113 @@ class Main {
     }
 
     // Dentre os n2 países com maiores valores de "Active", o "Deaths" dos n3 países com menores valores de "Confirmed".
-    public static void n2BiggestActiveDeathsOfN3SmallerConfirmeds(String[][] data, int n2, int n3) {
+    public static void n2BiggestActiveDeathsOfN3SmallerConfirms(String[][] data, int n2, int n3) {
         int[] active = new int[data.length];
-        int[] deaths = new int[data.length];
-        int[] confirmed = new int[data.length];
 
         for (int i = 1; i < data.length; i++) {
             active[i] = Integer.parseInt(data[i][4]);
-            deaths[i] = Integer.parseInt(data[i][2]);
-            confirmed[i] = Integer.parseInt(data[i][1]);
         }
 
-        Arrays.sort(active);
-        Arrays.sort(deaths, Comparator.reverseOrder());
+        // Sort the active array in descending order
+        active = sortDesc(active);
 
-        int sumDeaths = 0;
-        for (int i = 1; i <= n2; i++) {
-            for (int j = 1; j <= n3; j++) {
-                if (active[i] == deaths[j]) {
-                    sumDeaths += deaths[j];
+        // Get the top n2 active values
+        int[] topN2Active = Arrays.copyOfRange(active, 1, n2 + 1);
+
+
+        // Top n2 active data
+        int[][] topN2ActiveData = new int[n2][4];
+
+        int j = 0;
+        for (int k = 0; k < n2; k++) {
+            for (int i = 1; i < data.length; i++) {
+                if (data[i][4].equals(String.valueOf(topN2Active[k]))) {
+
+                    topN2ActiveData[j++] = new int[] {
+                            Integer.parseInt(data[i][1]),
+                            Integer.parseInt(data[i][2]),
+                            Integer.parseInt(data[i][3]),
+                            Integer.parseInt(data[i][4])
+                    };
+
                 }
             }
         }
+
+        // From the n2 active data, get the confirmed values
+        int[] n2Confirmed = new int[n2];
+
+        for (int i = 0; i < n2; i++) {
+            n2Confirmed[i] = topN2ActiveData[i][0];
+        }
+
+        // Sort the confirmed array in ascending order
+        for (int value : n2Confirmed) {
+            System.out.println(value);
+        }
+
+        n2Confirmed = sortAsc(n2Confirmed);
+
+        System.out.println("Sorted");
+
+
+        for (int value : n2Confirmed) {
+            System.out.println(value);
+        }
+
+        // Get the bottom n3 confirmed values
+        int[] bottomN3Confirmed = Arrays.copyOfRange(n2Confirmed, 0, n3);
+
+        int[][] bottomN3ConfirmedData = new int[n3][4];
+
+        j = 0;
+        for (int k = 0; k < n3; k++) {
+            for (int i = 1; i < data.length; i++) {
+                if (data[i][1].equals(String.valueOf(bottomN3Confirmed[k]))) {
+
+                    bottomN3ConfirmedData[j++] = new int[] {
+                            Integer.parseInt(data[i][1]),
+                            Integer.parseInt(data[i][2]),
+                            Integer.parseInt(data[i][3]),
+                            Integer.parseInt(data[i][4])
+                    };
+
+                }
+            }
+        }
+
+        int sumDeaths = 0;
+
+        for (int i = 0; i < n3; i++) {
+            sumDeaths += bottomN3ConfirmedData[i][1];
+        }
+
         System.out.println(sumDeaths);
+    }
+
+    private static int[] sortDesc(int[] vector) {
+        for (int i = 0; i < vector.length; i++) {
+            for (int j = 0; j < vector.length - i; j++) {
+                if (vector[j] < vector[j + 1]) {
+                    int temp = vector[j];
+                    vector[j] = vector[j + 1];
+                    vector[j + 1] = temp;
+                }
+            }
+        }
+        return vector;
+    }
+
+    private static int[] sortAsc(int[] vector) {
+        for (int i = 0; i < vector.length; i++) {
+            for (int j = 0; j < vector.length - i; j++) {
+                if (vector[j] > vector[j + 1]) {
+                    int temp = vector[j];
+                    vector[j] = vector[j + 1];
+                    vector[j + 1] = temp;
+                }
+            }
+        }
+        return vector;
     }
 }
