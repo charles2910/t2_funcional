@@ -66,30 +66,15 @@ class Main {
         }
 
         // Sort the active array in descending order
-        active = sortDesc(active);
+        Arrays.sort(active);
+        Collections.reverse(Arrays.asList(active));
 
         // Get the top n2 active values
         int[] topN2Active = Arrays.copyOfRange(active, 1, n2 + 1);
 
-
         // Top n2 active data
-        int[][] topN2ActiveData = new int[n2][4];
+        int[][] topN2ActiveData = dataSubsetter(data, topN2Active, n2);
 
-        int j = 0;
-        for (int k = 0; k < n2; k++) {
-            for (int i = 1; i < data.length; i++) {
-                if (data[i][4].equals(String.valueOf(topN2Active[k]))) {
-
-                    topN2ActiveData[j++] = new int[] {
-                            Integer.parseInt(data[i][1]),
-                            Integer.parseInt(data[i][2]),
-                            Integer.parseInt(data[i][3]),
-                            Integer.parseInt(data[i][4])
-                    };
-
-                }
-            }
-        }
 
         // From the n2 active data, get the confirmed values
         int[] n2Confirmed = new int[n2];
@@ -103,7 +88,7 @@ class Main {
             System.out.println(value);
         }
 
-        n2Confirmed = sortAsc(n2Confirmed);
+        Arrays.sort(n2Confirmed);
 
         System.out.println("Sorted");
 
@@ -115,23 +100,8 @@ class Main {
         // Get the bottom n3 confirmed values
         int[] bottomN3Confirmed = Arrays.copyOfRange(n2Confirmed, 0, n3);
 
-        int[][] bottomN3ConfirmedData = new int[n3][4];
+        int[][] bottomN3ConfirmedData = dataSubsetter(data, bottomN3Confirmed, n3);
 
-        j = 0;
-        for (int k = 0; k < n3; k++) {
-            for (int i = 1; i < data.length; i++) {
-                if (data[i][1].equals(String.valueOf(bottomN3Confirmed[k]))) {
-
-                    bottomN3ConfirmedData[j++] = new int[] {
-                            Integer.parseInt(data[i][1]),
-                            Integer.parseInt(data[i][2]),
-                            Integer.parseInt(data[i][3]),
-                            Integer.parseInt(data[i][4])
-                    };
-
-                }
-            }
-        }
 
         int sumDeaths = 0;
 
@@ -142,29 +112,26 @@ class Main {
         System.out.println(sumDeaths);
     }
 
-    private static int[] sortDesc(int[] vector) {
-        for (int i = 0; i < vector.length; i++) {
-            for (int j = 0; j < vector.length - i; j++) {
-                if (vector[j] < vector[j + 1]) {
-                    int temp = vector[j];
-                    vector[j] = vector[j + 1];
-                    vector[j + 1] = temp;
-                }
-            }
-        }
-        return vector;
-    }
+    static int[][] dataSubsetter(String[][] data, int[] subset, int n) {
 
-    private static int[] sortAsc(int[] vector) {
-        for (int i = 0; i < vector.length; i++) {
-            for (int j = 0; j < vector.length - i; j++) {
-                if (vector[j] > vector[j + 1]) {
-                    int temp = vector[j];
-                    vector[j] = vector[j + 1];
-                    vector[j + 1] = temp;
+        int[][] dataSubset = new int[n][4];
+        int j = 0;
+
+        for (int k = 0; k < n; k++) {
+            for (int i = 1; i < data.length; i++) {
+                if (data[i][4].equals(String.valueOf(subset[k]))) {
+
+                    dataSubset[j++] = new int[] {
+                            Integer.parseInt(data[i][1]),
+                            Integer.parseInt(data[i][2]),
+                            Integer.parseInt(data[i][3]),
+                            Integer.parseInt(data[i][4])
+                    };
+
                 }
             }
         }
-        return vector;
+
+        return dataSubset;
     }
 }
