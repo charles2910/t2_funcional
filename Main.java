@@ -66,15 +66,13 @@ class Main {
         }
 
         // Sort the active array in descending order
-        Arrays.sort(active);
-        Collections.reverse(Arrays.asList(active));
+        sortDesc(active);
 
         // Get the top n2 active values
-        int[] topN2Active = Arrays.copyOfRange(active, 1, n2 + 1);
+        int[] topN2Active = Arrays.copyOfRange(active, 0, n2);
 
         // Top n2 active data
-        int[][] topN2ActiveData = dataSubsetter(data, topN2Active, n2);
-
+        int[][] topN2ActiveData = dataSubsetter(data, topN2Active,4, n2);
 
         // From the n2 active data, get the confirmed values
         int[] n2Confirmed = new int[n2];
@@ -84,42 +82,74 @@ class Main {
         }
 
         // Sort the confirmed array in ascending order
-        for (int value : n2Confirmed) {
-            System.out.println(value);
-        }
-
-        Arrays.sort(n2Confirmed);
-
-        System.out.println("Sorted");
-
-
-        for (int value : n2Confirmed) {
-            System.out.println(value);
-        }
+        sortAsc(n2Confirmed);
 
         // Get the bottom n3 confirmed values
         int[] bottomN3Confirmed = Arrays.copyOfRange(n2Confirmed, 0, n3);
 
-        int[][] bottomN3ConfirmedData = dataSubsetter(data, bottomN3Confirmed, n3);
-
-
-        int sumDeaths = 0;
+        int[][] bottomN3ConfirmedData = dataSubsetter(data, bottomN3Confirmed, 1, n3);
 
         for (int i = 0; i < n3; i++) {
-            sumDeaths += bottomN3ConfirmedData[i][1];
+            System.out.println(bottomN3ConfirmedData[i][1]);
         }
 
-        System.out.println(sumDeaths);
     }
 
-    static int[][] dataSubsetter(String[][] data, int[] subset, int n) {
+    public static void sortDesc(int[] array) {
+        sort(array, 0, array.length - 1, true);
+    }
+
+    public static void sortAsc(int[] array) {
+        sort(array, 0, array.length - 1, false);
+    }
+
+    private static void sort(int[] array, int low, int high, boolean descending) {
+        if (low < high) {
+            int pivotIndex = partition(array, low, high, descending);
+            sort(array, low, pivotIndex - 1, descending);
+            sort(array, pivotIndex + 1, high, descending);
+        }
+    }
+
+    private static int partition(int[] array, int low, int high, boolean descending) {
+        int pivot = array[high];
+        int i = low - 1;
+
+        if (descending) {
+            for (int j = low; j < high; j++) {
+                if (array[j] >= pivot) {
+                    i++;
+                    swap(array, i, j);
+                }
+            }
+        } else {
+            for (int j = low; j < high; j++) {
+                if (array[j] <= pivot) {
+                    i++;
+                    swap(array, i, j);
+                }
+            }
+        }
+
+        swap(array, i + 1, high);
+        return i + 1;
+    }
+
+    private static void swap(int[] array, int i, int j) {
+        int temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+
+
+    static int[][] dataSubsetter(String[][] data, int[] subset, int param, int n) {
 
         int[][] dataSubset = new int[n][4];
         int j = 0;
 
         for (int k = 0; k < n; k++) {
             for (int i = 1; i < data.length; i++) {
-                if (data[i][4].equals(String.valueOf(subset[k]))) {
+                if (data[i][param].equals(String.valueOf(subset[k]))) {
 
                     dataSubset[j++] = new int[] {
                             Integer.parseInt(data[i][1]),
