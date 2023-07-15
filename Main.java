@@ -95,7 +95,24 @@ class Main {
 
     }
 
-    public static void sortDesc(int[] array) {
+    //Os n4 países com os maiores valores de "Confirmed". Os nomes devem estar em ordem alfabética.
+    public static void n4BiggestConfirmsWithOrdNames(String[][] data, int n4) {
+        int[] confirmed = new int[data.length];
+
+        for (int i = 1; i < data.length; i++) {
+            confirmed[i] = Integer.parseInt(data[i][1]);
+        }
+
+        sortDesc(confirmed);
+        int[] topN4Confirmed = Arrays.copyOfRange(confirmed, 0, n4);
+
+        int[][] topN2ActiveData = dataSubsetter(data, topN4Confirmed,1, n4);
+
+
+    }
+
+
+        public static void sortDesc(int[] array) {
         sort(array, 0, array.length - 1, true);
     }
 
