@@ -12,17 +12,14 @@ class Main {
 
         int n1 = 0, n2 = 0, n3 = 0, n4 = 0;
 
-        try {
-            n1 = scanner.nextInt();
-            n2 = scanner.nextInt();
-            n3 = scanner.nextInt();
-            n4 = scanner.nextInt();
+        n1 = scanner.nextInt();
+        n2 = scanner.nextInt();
+        n3 = scanner.nextInt();
+        n4 = scanner.nextInt();
 
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid input");
-        }
+        final int N1 = n1, N2 = n2, N3 = n3, N4 = n4;
 
-        String fileName = "../dados.csv";
+        String fileName = "./dados.csv";
         List<Country> countryDataList = new ArrayList<Country>();
 
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
@@ -31,7 +28,6 @@ class Main {
 
                 //br returns as stream and convert it into a List
                 countryDataList = br.lines()
-                                    .limit(3)
                                     .map(line -> {
                                             String[] values = line.split(",");
                                             int confirmed = Integer.parseInt(values[1]);
@@ -48,12 +44,28 @@ class Main {
         }
 
         int sumActiveGreaterThanN1 = 0;
-        List<String> deathsGreatestActiveLowestConfirmed = new ArrayList<>();
-        List<String> GreatestConfirmed = new ArrayList<>();
 
-        countryDataList.forEach(value -> System.out.println(value.name));
 
-        //sumActiveGreaterThanN1 = br.lines();
+        sumActiveGreaterThanN1 = countryDataList.stream()
+                                                .filter(country -> country.confirmed >= N1)
+                                                .map(country -> country.active)
+                                                .reduce(0, (partialSum, active) -> partialSum + active);
+        System.out.println(sumActiveGreaterThanN1);
+
+        countryDataList.stream()
+                       .sorted(Comparator.comparing(Country::getActive, Comparator.reverseOrder()))
+                       .limit(N2)
+                       .sorted(Comparator.comparing(Country::getConfirmed))
+                       .limit(N3)
+                       .map(country -> country.deaths)
+                       .forEach(deaths -> System.out.println(deaths));
+
+        countryDataList.stream()
+                       .sorted(Comparator.comparing(Country::getConfirmed, Comparator.reverseOrder()))
+                       .limit(N4)
+                       .sorted(Comparator.comparing(Country::getName))
+                       .map(country -> country.name)
+                       .forEach(name -> System.out.println(name));
     }
 }
 
@@ -70,5 +82,22 @@ class Country {
                 this.deaths = deaths;
                 this.recovery = recovery;
                 this.active = active;
+        }
+
+        @Override
+        public String toString() {
+                return this.name + ", " + this.confirmed + ", " + this.deaths + ", " + this.recovery + ", " + this.active;
+        }
+
+        public String getName() {
+                return this.name;
+        }
+
+        public Integer getConfirmed() {
+                return Integer.valueOf(this.confirmed);
+        }
+
+        public Integer getActive() {
+                return Integer.valueOf(this.active);
         }
 }
