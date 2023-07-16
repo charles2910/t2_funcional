@@ -119,13 +119,17 @@ class Main {
             confirmed[i] = Integer.parseInt(data[i][1]);
         }
 
+        // Sort the confirmed array in descending order
         sortDesc(confirmed);
 
+        // Get the top n4 confirmed values
         int[] topN4Confirmed = Arrays.copyOfRange(confirmed, 0, n4);
         dataSubset = dataSubsetter(data, topN4Confirmed, 1, 0, n4);
 
+        // Get the country name of the top n4 confirmed values
         String[] topN2ActiveNames = dataSubset.getName();
 
+        // Sort the country name alphabetically
         Arrays.sort(topN2ActiveNames);
 
         for (String name: topN2ActiveNames) {
@@ -181,6 +185,15 @@ class Main {
         array[j] = temp;
     }
 
+    /**
+     * The dataSubsetter method extracts a subset (row) of data based on source row and destine row
+     * @param data The original data.
+     * @param subset An array of values to match against the source parameter.
+     * @param srcParam The index of the source parameter in each data row.
+     * @param desParam The index of the destination parameter in each data row.
+     * @param n The size of the subset to be extracted.
+     * @return A DataSubset object containing the extracted subset of data.
+     */
     static DataSubset dataSubsetter(String[][] data, int[] subset, int srcParam, int desParam, int n) {
 
         DataSubset dataSubset = new DataSubset();
