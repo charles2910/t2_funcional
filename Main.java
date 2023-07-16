@@ -11,7 +11,7 @@ class Main {
         String input = scanner.nextLine();
         String[] numbers = input.split(" ");
 
-        int n1 = 3000000, n2 = 2, n3 = 5, n4 = 1;
+        int n1 = 133, n2 = 7, n3 = 0, n4 = 2;
 
         try {
             n1 = Integer.parseInt(numbers[0]);
@@ -60,12 +60,13 @@ class Main {
     // A soma de "Active" de todos os países em que "Confirmed" é maior o igual que n1.
     public static void sumActiveIfConfirmedBiggerThanN1(String[][] data, int n1) {
         int sumActive = 0;
+
         for (int i = 1; i < data.length; i++) {
             if (Integer.parseInt(data[i][1]) > n1) {
                 sumActive += Integer.parseInt(data[i][4]);
             }
         }
-        System.out.print(sumActive);
+        System.out.println(sumActive);
     }
 
     // Dentre os n2 países com maiores valores de "Active", o "Deaths" dos n3 países com menores valores de "Confirmed".
@@ -101,7 +102,8 @@ class Main {
         int[] bottomN3ConfirmedData = dataSubset.getDataSubset();
 
         for (int i = 0; i < n3; i++) {
-            System.out.print("\n" + bottomN3ConfirmedData[i]);
+            if (bottomN3ConfirmedData[i] != 0)
+                System.out.println(bottomN3ConfirmedData[i]);
         }
 
     }
@@ -127,7 +129,7 @@ class Main {
         Arrays.sort(topN2ActiveNames);
 
         for (String name: topN2ActiveNames) {
-            System.out.print("\n" + name);
+            System.out.println(name);
         }
 
     }
