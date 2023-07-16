@@ -5,27 +5,38 @@ import java.util.*;
 
 class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         Scanner scanner = new Scanner(System.in);
 
-//        String input = scanner.nextLine();
-//        String[] numbers = input.split(" ");
+        String input = scanner.nextLine();
+        String[] numbers = input.split(" ");
 
-        int n1 = 1000000, n2 = 10, n3 = 4, n4 = 2;
+        int n1 = 3000000, n2 = 2, n3 = 5, n4 = 1;
 
         try {
-//            n1 = Integer.parseInt(numbers[0]);
-//            n2 = Integer.parseInt(numbers[1]);
-//            n3 = Integer.parseInt(numbers[2]);
-//            n4 = Integer.parseInt(numbers[3]);
+            n1 = Integer.parseInt(numbers[0]);
+            n2 = Integer.parseInt(numbers[1]);
+            n3 = Integer.parseInt(numbers[2]);
+            n4 = Integer.parseInt(numbers[3]);
 
         } catch (NumberFormatException e) {
             System.out.println("Invalid input");
         }
 
         String[][] data = csvParser("./dados.csv", ",");
-        sumActiveIfConfirmedBiggerThanN1(data, n1);
-        n2BiggestActiveDeathsOfN3SmallerConfirms(data, n2, n3);
+
+        if (n1 != 0) {
+            sumActiveIfConfirmedBiggerThanN1(data, n1);
+        }
+
+        if (n2 != 0 && n3 != 0) {
+            n2BiggestActiveDeathsOfN3SmallerConfirms(data, n2, n3);
+        }
+
+        if (n4 != 0) {
+            n4BiggestConfirmsWithOrdNames(data, n4);
+        }
+
     }
     public static String[][] csvParser(String csvFile, String csvSplitBy) {
         String line;
@@ -54,11 +65,14 @@ class Main {
                 sumActive += Integer.parseInt(data[i][4]);
             }
         }
-        System.out.println(sumActive);
+        System.out.print(sumActive);
     }
 
     // Dentre os n2 países com maiores valores de "Active", o "Deaths" dos n3 países com menores valores de "Confirmed".
     public static void n2BiggestActiveDeathsOfN3SmallerConfirms(String[][] data, int n2, int n3) {
+
+        DataSubset dataSubset;
+
         int[] active = new int[data.length];
 
         for (int i = 1; i < data.length; i++) {
@@ -72,14 +86,10 @@ class Main {
         int[] topN2Active = Arrays.copyOfRange(active, 0, n2);
 
         // Top n2 active data
-        int[][] topN2ActiveData = dataSubsetter(data, topN2Active,4, n2);
+        dataSubset = dataSubsetter(data, topN2Active,4, 1, n2);
 
         // From the n2 active data, get the confirmed values
-        int[] n2Confirmed = new int[n2];
-
-        for (int i = 0; i < n2; i++) {
-            n2Confirmed[i] = topN2ActiveData[i][0];
-        }
+        int[] n2Confirmed = dataSubset.getDataSubset();
 
         // Sort the confirmed array in ascending order
         sortAsc(n2Confirmed);
@@ -87,16 +97,20 @@ class Main {
         // Get the bottom n3 confirmed values
         int[] bottomN3Confirmed = Arrays.copyOfRange(n2Confirmed, 0, n3);
 
-        int[][] bottomN3ConfirmedData = dataSubsetter(data, bottomN3Confirmed, 1, n3);
+        dataSubset = dataSubsetter(data, bottomN3Confirmed, 1, 2, n3);
+        int[] bottomN3ConfirmedData = dataSubset.getDataSubset();
 
         for (int i = 0; i < n3; i++) {
-            System.out.println(bottomN3ConfirmedData[i][1]);
+            System.out.print("\n" + bottomN3ConfirmedData[i]);
         }
 
     }
 
     //Os n4 países com os maiores valores de "Confirmed". Os nomes devem estar em ordem alfabética.
     public static void n4BiggestConfirmsWithOrdNames(String[][] data, int n4) {
+
+        DataSubset dataSubset;
+
         int[] confirmed = new int[data.length];
 
         for (int i = 1; i < data.length; i++) {
@@ -104,15 +118,22 @@ class Main {
         }
 
         sortDesc(confirmed);
+
         int[] topN4Confirmed = Arrays.copyOfRange(confirmed, 0, n4);
+        dataSubset = dataSubsetter(data, topN4Confirmed, 1, 0, n4);
 
-        int[][] topN2ActiveData = dataSubsetter(data, topN4Confirmed,1, n4);
+        String[] topN2ActiveNames = dataSubset.getName();
 
+        Arrays.sort(topN2ActiveNames);
+
+        for (String name: topN2ActiveNames) {
+            System.out.print("\n" + name);
+        }
 
     }
 
 
-        public static void sortDesc(int[] array) {
+    public static void sortDesc(int[] array) {
         sort(array, 0, array.length - 1, true);
     }
 
@@ -158,27 +179,61 @@ class Main {
         array[j] = temp;
     }
 
+    static DataSubset dataSubsetter(String[][] data, int[] subset, int srcParam, int desParam, int n) {
 
-    static int[][] dataSubsetter(String[][] data, int[] subset, int param, int n) {
+        DataSubset dataSubset = new DataSubset();
 
-        int[][] dataSubset = new int[n][4];
         int j = 0;
+
+        int[] tmpIntSubset = new int[n];
+        String[] tmpStrSubset = new String[n];
 
         for (int k = 0; k < n; k++) {
             for (int i = 1; i < data.length; i++) {
-                if (data[i][param].equals(String.valueOf(subset[k]))) {
 
-                    dataSubset[j++] = new int[] {
-                            Integer.parseInt(data[i][1]),
-                            Integer.parseInt(data[i][2]),
-                            Integer.parseInt(data[i][3]),
-                            Integer.parseInt(data[i][4])
-                    };
+                if (j == n) {
+                    break;
+                }
 
+                if (data[i][srcParam].equals(String.valueOf(subset[k]))) {
+
+                    if (desParam == 0) {
+                       tmpStrSubset[j++] = data[i][desParam];
+                    }
+
+                    else {
+                        tmpIntSubset[j++] = Integer.parseInt(data[i][desParam]);
+                        };
+                    }
                 }
             }
-        }
+
+        dataSubset.setName(tmpStrSubset);
+        dataSubset.setDataSubset(tmpIntSubset);
 
         return dataSubset;
+    }
+
+
+    public static class DataSubset {
+        private String[] name;
+
+        public void setName(String[] name) {
+            this.name = name;
+        }
+
+        public void setDataSubset(int[] dataSubset) {
+            this.dataSubset = dataSubset;
+        }
+
+        private int[] dataSubset;
+
+        public String[] getName() {
+            return name;
+        }
+
+        public int[] getDataSubset() {
+            return dataSubset;
+        }
     }
 }
