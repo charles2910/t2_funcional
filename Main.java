@@ -102,7 +102,7 @@ class Main {
         int[] bottomN3ConfirmedData = dataSubset.getDataSubset();
 
         for (int i = 0; i < n3; i++) {
-            if (bottomN3ConfirmedData[i] != 0)
+            if (bottomN3ConfirmedData[i] != -1)
                 System.out.println(bottomN3ConfirmedData[i]);
         }
 
@@ -201,6 +201,7 @@ class Main {
         int j = 0;
 
         int[] tmpIntSubset = new int[n];
+        Arrays.fill(tmpIntSubset, -1);
         String[] tmpStrSubset = new String[n];
 
         for (int k = 0; k < n; k++) {
