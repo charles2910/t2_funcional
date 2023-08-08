@@ -23,9 +23,6 @@ class Main {
         List<Country> countryDataList = new ArrayList<Country>();
 
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
-                // discard csv header
-                br.readLine();
-
                 //br returns as stream and convert it into a List
                 countryDataList = br.lines()
                                     .map(line -> {
